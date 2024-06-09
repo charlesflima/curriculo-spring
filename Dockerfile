@@ -1,23 +1,14 @@
-FROM ubuntu:latest AS build
-
-RUN apt-get update \
-    && apt-get install -y openjdk-22-jdk maven \
-    && rm -rf /var/lib/apt/lists/*
+FROM openjdk:22-jdk-slim AS build
 
 WORKDIR /app
-
 COPY . .
 
-RUN mvn clean install
+RUN ./mvnw clean package
 
 FROM openjdk:22-jdk-slim
-
 EXPOSE 8080
+COPY --from=build /app/target/appcurriculo-0.0.1-SNAPSHOT.jar /app/appcurriculo.jar
+ENTRYPOINT ["java", "-jar", "/app/appcurriculo.jar"]
 
-WORKDIR /app
-
-COPY --from=build /app/target/appcurriculo-0.0.1-SNAPSHOT.jar appcurriculo.jar
-
-ENTRYPOINT ["java", "-jar", "appcurriculo.jar"]
 
 
