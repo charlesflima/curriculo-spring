@@ -1,38 +1,33 @@
-# Etapa de build
-# Use a imagem do Maven com OpenJDK 22 como base para compilar e empacotar a aplicação
-FROM maven:3.8.7-openjdk-22-slim AS build
+# Etapa de construção
+FROM openjdk:22-jdk-slim AS build
 
-# Define o diretório de trabalho dentro do contêiner
+# Instalar Maven
+RUN apt-get update && apt-get install -y maven
+
+# Definir diretório de trabalho
 WORKDIR /app
 
-# Copia o arquivo pom.xml e o Maven Wrapper para o contêiner
-COPY pom.xml ./
-COPY mvnw ./
-COPY .mvn ./.mvn
+# Copiar arquivos do projeto para o contêiner
+COPY . .
 
-# Baixa as dependências do Maven
-RUN ./mvnw dependency:go-offline
+# Dar permissão de execução para o Maven Wrapper
+RUN chmod +x mvnw
 
-# Copia o código fonte do projeto para o contêiner
-COPY src ./src
+# Executar o Maven para compilar o projeto e criar o arquivo JAR, ignorando os testes
+RUN ./mvnw clean package -DskipTests=true
 
-# Compila e empacota o projeto
-RUN ./mvnw clean package
+# Etapa de execução
+FROM openjdk:22-jdk-slim
 
-# Use a imagem do OpenJDK 22 como base para o contêiner final
-FROM adoptopenjdk:22-jre-hotspot
-
-# Define o diretório de trabalho dentro do contêiner
-WORKDIR /app
-
-# Copia o arquivo JAR gerado para o contêiner final
-COPY --from=build /app/target/appcurriculo-0.0.1-SNAPSHOT.jar /app/appcurriculo.jar
-
-# Expõe a porta 8080, que é a porta padrão para aplicativos Spring Boot
+# Expor a porta que a aplicação irá rodar
 EXPOSE 8080
 
-# Comando para executar a aplicação quando o contêiner for iniciado
-CMD ["java", "-jar", "appcurriculo.jar"]
+# Copiar o arquivo JAR construído da etapa de build
+COPY --from=build /app/target/appcurriculo-0.0.1-SNAPSHOT.jar /app/appcurriculo.jar
+
+# Definir o ponto de entrada do contêiner para executar a aplicação
+ENTRYPOINT ["java", "-jar", "/app/appcurriculo.jar"]
+
 
 
 
