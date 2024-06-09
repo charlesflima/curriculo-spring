@@ -19,7 +19,7 @@ COPY src ./src
 RUN ./mvnw clean package
 
 # Use a imagem do OpenJDK 22 como base para o contêiner final
-FROM openjdk:22-jdk-slim
+FROM openjdk:8-jre
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
@@ -32,4 +32,6 @@ EXPOSE 8080
 
 # Comando para executar a aplicação quando o contêiner for iniciado
 CMD ["java", "-jar", "appcurriculo.jar"]
+
+
 
