@@ -1,5 +1,5 @@
 # Etapa de build
-FROM maven:3.8.4-openjdk-22-slim AS build
+FROM maven:4.0.0-openjdk-22-slim AS build
 COPY . .
 RUN ./mvnw clean package -DskipTests=true
 
