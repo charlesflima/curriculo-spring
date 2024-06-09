@@ -27,10 +27,3 @@ COPY --from=build /app/target/appcurriculo-0.0.1-SNAPSHOT.jar /app/appcurriculo.
 
 # Definir o ponto de entrada do contêiner para executar a aplicação
 ENTRYPOINT ["java", "-jar", "/app/appcurriculo.jar"]
-
-
-
-
-
-
-
