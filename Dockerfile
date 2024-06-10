@@ -1,7 +1,7 @@
 # Etapa de build
 FROM maven:3.8.7-openjdk-17 AS build
 WORKDIR /app
-COPY . .
+COPY .. .
 RUN ./mvnw clean package -DskipTests=true
 
 # Etapa de runtime
